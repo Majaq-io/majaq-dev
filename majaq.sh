@@ -42,14 +42,14 @@ isRunning () {
     then
         RUNNING=1
         ID=$IS_RUNNING
-        startedMsg
+        echo "Majaq now Running!"
     else
         RUNNING=0
     fi
 }
 
-startedMsg () {
-    echo "Majaq now Running!"
+seed () {
+    echo "seeding: $SEED"
 }
 
 usage () {
@@ -57,7 +57,7 @@ cat << EOF
 usage: 
     majaq install [-f | --fresh]
     majaq start [-s | --seed file_in_src_database_seed.sql]
-    majaq stop [-e | --export file_in_src_database_export.sql]
+    majaq stop [-e | --export file_to_src_database_export.sql]
     majaq restart
     majaq -v | --version
     majaq update
@@ -67,26 +67,6 @@ Report bugs to: dev-team@majaq.io
 EOF
 }
 
-# getSwitches
-while getopts ":v:h" opt; do
-  case $opt in
-    v) echo "$version" ;;
-    h) usage ;;
-    \?) echo "Invalid option: -$OPTARG" >&2
-      exit 1 ;;
-  esac
-done
-
-# getOptions
-while getopts "s:e:v:" option
-do
-case "${option}"
-in
-s) SEED=${OPTARG};;
-e) EXPORT=${OPTARG};;
-esac
-done
-
 if [ $1 = "install" ]
 then
     install
@@ -94,6 +74,16 @@ fi
 
 if [ $1 = "start" ]
 then
+    if [ $2 = "-s" ] && [ -z "$3" ]
+    then
+        SEED="default"
+        seed
+    elif [ $2 = "-s" ] && [ $3 != "" ]
+    then
+        SEED=$3
+        seed
+    fi
+    # echo "$1 $2 $SEED"
     start
 fi
 
@@ -102,14 +92,14 @@ then
     stop
 fi
 
-# if [ $1 = "-h" ]
-# then
-#     usage
-# fi
-
 if [ $1 = "-v" ]
 then
     echo $version
+fi
+
+if [ $1 = "-h" ]
+then
+    usage
 fi
 
 
