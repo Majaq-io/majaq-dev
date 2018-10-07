@@ -12,25 +12,33 @@ install () {
 }
 
 start () {
-    echo "Majaq version $version"
-    checkUpdate
-    echo "Starting...."
-    cd $working_dir/src
-    docker-compose -f $working_dir/src/docker-compose.yml up -d
-    if [ -f "$working_dir/src/files/wp-config.php" ]
-    then
-        rsync -s $working_dir/src/files/wp-config.php $working_dir/src/backend/wp-config.php
-    fi
-
-    if [ -d "$working_dir/src/files/wp-content" ]
-    then
-        cd $working_dir/src
-        docker-compose run wordpress rm -rf /var/www/html/wp-content
-        rsync -a $working_dir/src/files/wp-content/ $working_dir/src/backend/wp-content/
-    # else
-        # cp -r $working_dir/src/backend/wp-content/ $working_dir/src/files
-    fi
     isRunning
+    if [ $RUNNING = 1 ]
+    then
+        echo "Majaq is already running"
+        exit
+    else 
+        echo "Majaq version $version"
+        checkUpdate
+        echo "Starting...."
+        cd $working_dir/src
+        docker-compose -f $working_dir/src/docker-compose.yml up -d
+        if [ -f "$working_dir/src/files/wp-config.php" ]
+        then
+            rsync -s $working_dir/src/files/wp-config.php $working_dir/src/backend/wp-config.php
+        fi
+
+        if [ -d "$working_dir/src/files/wp-content" ]
+        then
+            cd $working_dir/src
+            docker-compose run wordpress rm -rf /var/www/html/wp-content
+            rsync -a $working_dir/src/files/wp-content/ $working_dir/src/backend/wp-content/
+        # else
+            # cp -r $working_dir/src/backend/wp-content/ $working_dir/src/files
+        fi
+        isRunning
+        echo "Majaq is running"
+    fi
 }
 
 stop () {
@@ -40,7 +48,8 @@ stop () {
     docker-compose down
     rsync -a $working_dir/src/backend/wp-content/ $working_dir/src/files/wp-content/
     rsync -a $working_dir/src/backend/wp-config.php $working_dir/src/files/wp-config.php
-    isRunning
+    echo "Majaq has stopped"
+    exit
 }
 
 restart () {
@@ -56,8 +65,8 @@ checkUpdate () {
     updateVersion=${updateVersion#"version="}
     updateVersion="${updateVersion%\"}"
     updateVersion="${updateVersion#\"}"
-    echo $version
-    echo $updateVersion
+    # echo $version
+    # echo $updateVersion
     if [ "$updateVersion" = "$version" ]
     then
         echo "up to date"
@@ -74,7 +83,6 @@ isRunning () {
     then
         RUNNING=1
         ID=$IS_RUNNING
-        echo "Majaq now Running!"
     else
         RUNNING=0
     fi
@@ -123,6 +131,11 @@ fi
 if [ "$1" = "stop" ]
 then
     stop
+fi
+
+if [ "$1" = "restart" ]
+then
+    restart
 fi
 
 if [ "$1" = "-v" ]
