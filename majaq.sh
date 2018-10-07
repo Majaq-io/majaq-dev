@@ -43,6 +43,12 @@ stop () {
     isRunning
 }
 
+restart () {
+    stop
+    sleep 5
+    start
+}
+
 checkUpdate () {
     echo "checking update"
     # scriptRepoUrl="test"
