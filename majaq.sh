@@ -37,11 +37,18 @@ start () {
             # cp -r $working_dir/src/backend/wp-content/ $working_dir/src/files
         fi
         isRunning
-        echo "Majaq is running"
+        isRunningMsg
+        exit
     fi
 }
 
 stop () {
+    isRunning
+    if [ $RUNNING = 0 ]
+    then
+        isRunningMsg
+        exit
+    fi
     echo "Stopping...."
     # cd src
     cd $working_dir/src
@@ -50,6 +57,17 @@ stop () {
     rsync -a $working_dir/src/backend/wp-config.php $working_dir/src/files/wp-config.php
     echo "Majaq has stopped"
     exit
+}
+
+isRunningMsg () {
+    if [ $RUNNING = 0 ]
+    then
+        echo "Majaq is not running"
+        exit
+    elif [ $RUNNING = 1 ]
+    then
+        echo "Majaq is running"
+    fi
 }
 
 restart () {
@@ -102,6 +120,7 @@ usage:
     majaq -v | --version
     majaq update
     majaq -h | --help | usage
+    majaq status
 
 Report bugs to: dev-team@majaq.io
 EOF
@@ -110,9 +129,9 @@ EOF
 if [ "$1" = "install" ]
 then
     install
-fi
+# fi
 
-if [ "$1" = "start" ]
+elif [ "$1" = "start" ]
 then
     if [ "$2" = "-s" ] && [ -z "$3" ]
     then
@@ -126,24 +145,39 @@ then
     # echo "$1 $2 $SEED"
     start
     # sudo chown -R $USER $working_dir/src/backend
-fi
+# fi
 
-if [ "$1" = "stop" ]
+elif [ "$1" = "stop" ]
 then
     stop
-fi
+# fi
 
-if [ "$1" = "restart" ]
+elif [ "$1" = "restart" ]
 then
     restart
-fi
+# fi
 
-if [ "$1" = "-v" ]
+elif [ "$1" = "-v" ] | [ "$1" = "--version" ]
 then
     echo $version
-fi
+# fi
 
-if [ "$1" = "-h" ]
+elif [ "$1" = "-h" ] | [ "$1" = "--help" ]
 then
+    usage
+# fi
+
+elif [ "$1" = "status" ]
+then
+    isRunning
+    isRunningMsg
+# fi
+
+elif [ "$1" = "" ]
+then
+    echo "missing arguments"
+    usage
+else
+    echo "invalid arguments: $1"
     usage
 fi
