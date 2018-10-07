@@ -85,10 +85,6 @@ if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROT
 	$_SERVER['HTTPS'] = 'on';
 }
 
-
-/* Multisite */
-define( 'WP_ALLOW_MULTISITE', true );
-
 /* That's all, stop editing! Happy blogging. */
 
 /** Absolute path to the WordPress directory. */
