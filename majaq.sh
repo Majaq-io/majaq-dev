@@ -1,5 +1,6 @@
 #!/bin/bash
 version="1.0"
+scriptRepoUrl="https://raw.githubusercontent.com/Majaq-io/majaq-dev/master/majaq.sh"
 
 # working_dir=~/majaq.io/src
 working_dir=`dirname $0`
@@ -12,6 +13,7 @@ install () {
 
 start () {
     echo "Majaq version $version"
+    checkUpdate
     echo "Starting...."
     cd $working_dir/src
     docker-compose -f $working_dir/src/docker-compose.yml up -d
@@ -39,6 +41,24 @@ stop () {
     rsync -a $working_dir/src/backend/wp-content/ $working_dir/src/files/wp-content/
     rsync -a $working_dir/src/backend/wp-config.php $working_dir/src/files/wp-config.php
     isRunning
+}
+
+checkUpdate () {
+    echo "checking update"
+    # scriptRepoUrl="test"
+    updateVersion=`curl -s $scriptRepoUrl 2> /dev/null | head -n2 | sed -n '2 p'`
+    updateVersion=${updateVersion#"version="}
+    updateVersion="${updateVersion%\"}"
+    updateVersion="${updateVersion#\"}"
+    echo $version
+    echo $updateVersion
+    if [ "$updateVersion" = "$version" ]
+    then
+        echo "up to date"
+    else
+        echo "update available"
+    fi
+    # echo $updateVersion
 }
 
 isRunning () {
