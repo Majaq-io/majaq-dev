@@ -102,7 +102,7 @@ update () {
     else
         cd $working_dir/backend
         git fetch origin master
-        git pull -u origin master
+        git pull
     fi
 }
 
