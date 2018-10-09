@@ -78,7 +78,7 @@ isRunningMsg () {
     elif [ $RUNNING = 1 ]
     then
         echo "Majaq Dev is running at"
-        echo "http://http://localhost:8080"
+        echo "http://localhost:8080"
         exit
     fi
 }
