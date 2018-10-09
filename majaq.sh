@@ -5,7 +5,7 @@ working_dir=`dirname $0`
 
 ##### functions
 installBackend () {
-    if [ -d "$working_dir/src/backend/.git" ]
+    if [ ! -d "$working_dir/src/backend/.git" ]
     then
         echo "installing majaq-dev-backend in ./src/backend"
         rm -rf $working_dir/src/backend
