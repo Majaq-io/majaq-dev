@@ -99,14 +99,17 @@ checkUpdate () {
 }
 
 updateBackend () {
-    echo "now updating......"
-    if [ -d "$working_dir/src/backend/.git" ]
+    echo "Checking backend for updates"
+    if [ -d !$working_dir/src/backend/.git ]
     then
         installBackend
     else
-        cd $working_dir/src/backend
-        git fetch origin master
-        git pull
+        # cd $working_dir/src/backend
+        git -C $working_dir/src/backend fetch
+        git -C $working_dir/src/backend pull
+        # git fetch
+        # git pull
+        # cd $working_dir
     fi
 }
 
