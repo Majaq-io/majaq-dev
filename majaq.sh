@@ -2,6 +2,7 @@
 version="1.1"
 scriptRepoUrl="https://raw.githubusercontent.com/Majaq-io/majaq-dev/master/majaq.sh"
 working_dir=`dirname $0`
+dumpDir="$working_dir/src/database/dump"
 
 ##### functions
 RUNNING=0
@@ -165,23 +166,26 @@ checkDependencies () {
     echo "=============================="
 }
 
-seed () {
-    # echo "seeding... $SEED"
-    if [ "$SEED" = "default" ]
+selectSeed () {
+    # no seed flag used or selected, jsut start
+    if [ "$SEED" = null ]
+    then
+        start
+        exit
+
+    elif [ "$SEED" = "default" ]
     then
         # echo "copy dump/default.sql to seed/default.sql"
         # cp $dumpDir/default.sql $seedDir/default.sql
         start
-        sleep 12
+        sleep 3
         echo "running seed function, seed: $SEED"
         exit
-    fi
 
-    if [ "$SEED" = "select" ]
+    elif [ "$SEED" = "select" ]
     then
         prompt="Please select a dump to seed:"
-        # cd "$working_dir/src/database/dump"
-        options=( $(find "$working_dir/src/database/dump" -type f -path "*.sql" -printf  "%f\n" | xargs -0) )
+        options=( $(find "$dumpDir" -type f -path "*.sql" -printf  "%f\n" | xargs -0) )
         PS3="$prompt "
         select opt in "${options[@]}" "Quit" ; do 
             if (( REPLY == 1 + ${#options[@]} )) ; then
@@ -194,9 +198,8 @@ seed () {
             fi
         done
         SEED="$opt"
-        # echo "$SEED"
         start
-        sleep 12
+        sleep 3
         echo "running seed function, seed: $SEED"
         exit
     fi
@@ -238,7 +241,7 @@ fi
 if [ "$1" = "start" ] && [ "$2" = "-s" ] && [ -z $3 ]
 then
     SEED="default"
-    seed
+    selectSeed
 
     # isRunningMsg
     # echo "Stop before seeding with:"
@@ -248,7 +251,7 @@ then
 elif [ "$1" = "start" ] && [ "$2" = "-s" ] && [ "$3" = "select" ]
 then
     SEED="select"
-    seed
+    selectSeed
 
 elif [ "$RUNNING" = 1 ] && [ "$2" = "-s" ] 
 # && [ "$3" != "" ]
@@ -274,7 +277,6 @@ echo "$0 $1 $2"
 # deal with seed
 # check if not running and
 isRunning
-dumpDir="$working_dir/src/database/dump"
 
 if [ "$RUNNING" = "0" ]
 then
