@@ -16,6 +16,7 @@ wordpress_db:
     MYSQL_ROOT_PASSWORD: password
   volumes:
     - ./database/.db:/var/lib/mysql
+    - ./database/seed:/docker-entrypoint-initdb.d
 phpmyadmin:
   image: corbinu/docker-phpmyadmin
   links:
