@@ -12,10 +12,10 @@ installBackend () {
         git clone git@github.com:Majaq-io/majaq-dev-backend.git $working_dir/src/backend
         rsync -a $working_dir/src/files/wp-content/ $working_dir/src/backend/wp-content/
         rsync -a $working_dir/src/files/wp-config.php $working_dir/src/backend/wp-config.php
-        if [ -z $1 ]
-        then
-            exit
-        fi
+        # if [ -z $1 ]
+        # then
+        #     exit
+        # fi
     fi
 }
 
