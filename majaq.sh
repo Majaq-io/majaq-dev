@@ -27,6 +27,7 @@ start () {
         checkUpdate
         updateBackend
         echo "Starting...."
+        sleep 6
         # cd $working_dir/src
         docker-compose -f $working_dir/src/docker-compose.yml up -d
         if [ -f "$working_dir/src/files/wp-config.php" ]
