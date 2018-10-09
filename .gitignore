@@ -8,7 +8,7 @@ src/database/dump/*
 !src/database/dump
 !src/database/dump/master-dev.sql
 
-src/files/wp-content/themes/*
+src/files/wp-content/*
 
 daBoss.md
 
