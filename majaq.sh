@@ -102,7 +102,7 @@ checkUpdate () {
 
 updateBackend () {
     echo "Checking backend for updates"
-    if [ -d "./src/backend" ]
+    if [ -d "$working_dir/src/backend" ]
     then
         installBackend
     else
