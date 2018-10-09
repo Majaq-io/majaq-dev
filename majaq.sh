@@ -4,6 +4,24 @@ scriptRepoUrl="https://raw.githubusercontent.com/Majaq-io/majaq-dev/master/majaq
 working_dir=`dirname $0`
 
 ##### functions
+RUNNING=0
+if [ "$2" != "-s" ]
+then
+    SEED=null
+fi
+
+isRunning () {
+    IS_RUNNING=`docker-compose -f $working_dir/src/docker-compose.yml ps -q wordpress`
+    if [ "$IS_RUNNING" != "" ]
+    then
+        RUNNING=1
+        ID=$IS_RUNNING
+    else
+        RUNNING=0
+    fi
+}
+isRunning
+
 installBackend () {
     if [ ! -d "$working_dir/src/backend/.git" ]
     then
@@ -17,10 +35,16 @@ installBackend () {
 
 start () {
     isRunning
-    if [ $RUNNING = 1 ]
+    if [ "$RUNNING" = 1 ] && [ "$2" = "-s" ]
     then
         echo "Majaq is already running"
-        exit
+        echo "Now attempting to seed.."
+        return
+
+    elif [ "$RUNNING" = 1 ] && [ "$2" != "-s" ]
+    then
+        echo "Majaq is already running"
+        return
     else 
         echo "Majaq version $version"
         checkUpdate
@@ -141,16 +165,43 @@ checkDependencies () {
     echo "=============================="
 }
 
-isRunning () {
-    RUNNING=0
-    IS_RUNNING=`docker-compose -f $working_dir/src/docker-compose.yml ps -q wordpress`
-    if [ "$IS_RUNNING" != "" ]
+seed () {
+    # echo "seeding... $SEED"
+    if [ "$SEED" = "default" ]
     then
-        RUNNING=1
-        ID=$IS_RUNNING
-    else
-        RUNNING=0
+        # echo "copy dump/default.sql to seed/default.sql"
+        # cp $dumpDir/default.sql $seedDir/default.sql
+        start
+        sleep 12
+        echo "running seed function, seed: $SEED"
+        exit
     fi
+
+    if [ "$SEED" = "select" ]
+    then
+        prompt="Please select a dump to seed:"
+        # cd "$working_dir/src/database/dump"
+        options=( $(find "$working_dir/src/database/dump" -type f -path "*.sql" -printf  "%f\n" | xargs -0) )
+        PS3="$prompt "
+        select opt in "${options[@]}" "Quit" ; do 
+            if (( REPLY == 1 + ${#options[@]} )) ; then
+                exit
+            elif (( REPLY > 0 && REPLY <= ${#options[@]} )) ; then
+                echo  "You picked $(basename $opt) which is file $REPLY"
+                break
+            else
+                echo "Invalid option. Try another one."
+            fi
+        done
+        SEED="$opt"
+        # echo "$SEED"
+        start
+        sleep 12
+        echo "running seed function, seed: $SEED"
+        exit
+    fi
+# ========================
+
 }
 
 usage () {
@@ -170,20 +221,15 @@ EOF
 ###### parameters passed
 
 # ./majaq.sh start
+isRunning
 if [ "$1" = "start" ] && [ -z $2 ] && [ -z $3 ]
 then
-    isRunning
-    # echo "$RUNNING"
+    echo "$RUNNING"
     if [ "$RUNNING" = 0 ]
     then
         start
     else
         isRunningMsg
-        echo "Majaq must not be running to seed, try:"
-        echo "majaq restart -s"
-        echo "  or"
-        echo "majaq stop"
-        echo "majaq start -s"
         exit
     fi
 fi
@@ -192,11 +238,28 @@ fi
 if [ "$1" = "start" ] && [ "$2" = "-s" ] && [ -z $3 ]
 then
     SEED="default"
+    seed
+
+    # isRunningMsg
+    # echo "Stop before seeding with:"
+    # echo "  majaq stop"
 
 # ./majaq.sh start -s select (prompts to select dump)
-elif [ "$2" = "-s" ] && [ "$3" = "select" ]
+elif [ "$1" = "start" ] && [ "$2" = "-s" ] && [ "$3" = "select" ]
 then
     SEED="select"
+    seed
+
+elif [ "$RUNNING" = 1 ] && [ "$2" = "-s" ] 
+# && [ "$3" != "" ]
+then
+    echo "Majaq must not be running to seed, try:"
+    echo "majaq restart -s"
+    echo "  or"
+    echo "majaq stop"
+    echo "majaq start -s"
+    exit
+
 elif [ "$2" = "-s" ] && [ "$3" != "" ]
 then
     echo "invalid argument: $3"
@@ -205,54 +268,18 @@ then
     echo "-s select"
 fi
 
+echo "$0 $1 $2"
+
 
 # deal with seed
 # check if not running and
 isRunning
+dumpDir="$working_dir/src/database/dump"
+
 if [ "$RUNNING" = "0" ]
 then
-    # echo "$SEED"
-    dumpDir="$working_dir/src/database/dump"
-
-    # if seed default seed default
-    if [ "$SEED" = "default" ]
-    then
-        # echo "copy dump/default.sql to seed/default.sql"
-        # cp $dumpDir/default.sql $seedDir/default.sql
-        start
-        sleep 12
-        seed
-        exit
-    fi
-
-    if [ "$SEED" = "select" ]
-    then
-        prompt="Please select a dump to seed:"
-        # cd "$working_dir/src/database/dump"
-        options=( $(find "$working_dir/src/database/dump" -type f -path "*.sql" -printf  "%f\n" | xargs -0) )
-        PS3="$prompt "
-        select opt in "${options[@]}" "Quit" ; do 
-            if (( REPLY == 1 + ${#options[@]} )) ; then
-                exit
-            elif (( REPLY > 0 && REPLY <= ${#options[@]} )) ; then
-                echo  "You picked $(basename $opt) which is file $REPLY"
-                break
-            else
-                echo "Invalid option. Try another one."
-            fi
-        done 
-        # ls -ld "$dumpDir/$opt"
-        # cp "$dumpDir/$opt" "$seedDir/$opt"
-        SEED="$opt"
-        start
-        sleep 12
-        seed
-        exit
-    fi
-seed () {
-    # seed dat
     echo "$SEED"
-}
+
 # else    
 #     isRunningMsg
 fi
@@ -260,7 +287,7 @@ fi
 if [ "$1" = "stop" ]
 then
     stop
-fi
+# fi
 
 elif [ "$1" = "restart" ]
 then
