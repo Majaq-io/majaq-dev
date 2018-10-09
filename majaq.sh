@@ -102,7 +102,7 @@ checkUpdate () {
 
 updateBackend () {
     echo "Checking backend for updates"
-    if [ -d "$working_dir/src/backend/.git" ]
+    if [ -d "$working_dir/src/backend" ]
     then
         git -C $working_dir/src/backend fetch
         git -C $working_dir/src/backend pull
