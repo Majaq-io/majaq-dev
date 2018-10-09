@@ -12,10 +12,6 @@ installBackend () {
         git clone git@github.com:Majaq-io/majaq-dev-backend.git $working_dir/src/backend
         rsync -a $working_dir/src/files/wp-content/ $working_dir/src/backend/wp-content/
         rsync -a $working_dir/src/files/wp-config.php $working_dir/src/backend/wp-config.php
-        # if [ -z $1 ]
-        # then
-        #     exit
-        # fi
     fi
 }
 
@@ -89,8 +85,6 @@ checkUpdate () {
     updateVersion=${updateVersion#"version="}
     updateVersion="${updateVersion%\"}"
     updateVersion="${updateVersion#\"}"
-    # echo $version
-    # echo $updateVersion
     if [ "$updateVersion" = "$version" ]
     then
         echo "Up to date"
@@ -98,7 +92,6 @@ checkUpdate () {
         echo "Update available"
         update
     fi
-    # echo $updateVersion
 }
 
 update () {
@@ -161,29 +154,22 @@ isRunning () {
 }
 
 usage () {
-    # majaq install [-f | --fresh]
 cat << EOF
 usage: 
+    majaq -h | --help | usage
     majaq start [-s | --seed [select]]
     majaq stop [-d | --dump ]
     majaq restart
     majaq -v | --version
     majaq update
-    majaq -h | --help | usage
     majaq status
-
 Report bugs to: dev-team@majaq.io
 EOF
 }
 
+###### parameters passed
 
-###### parameters passes
-
-# if [ "$1" = "install" ]
-# then
-#     install
-# fi
-
+# ./majaq.sh start
 if [ "$1" = "start" ] && [ -z $2 ] && [ -z $3 ]
 then
     isRunning
@@ -200,14 +186,14 @@ then
         echo "majaq start -s"
         exit
     fi
-    # sudo chown -R $USER $working_dir/src/backend
 fi
-# +++===============================================
-# +++===============================================
+
+# ./majaq.sh start -s (seeds the dump default.sql)
 if [ "$1" = "start" ] && [ "$2" = "-s" ] && [ -z $3 ]
 then
     SEED="default"
 
+# ./majaq.sh start -s select (prompts to select dump)
 elif [ "$2" = "-s" ] && [ "$3" = "select" ]
 then
     SEED="select"
@@ -219,17 +205,24 @@ then
     echo "-s select"
 fi
 
+
+# deal with seed
+# check if not running and
 isRunning
 if [ "$RUNNING" = "0" ]
 then
     # echo "$SEED"
-    seedDir="$working_dir/src/database/seed"
     dumpDir="$working_dir/src/database/dump"
+
+    # if seed default seed default
     if [ "$SEED" = "default" ]
     then
-        echo "copy dump/default.sql to seed/default.sql"
-        cp $dumpDir/default.sql $seedDir/default.sql
+        # echo "copy dump/default.sql to seed/default.sql"
+        # cp $dumpDir/default.sql $seedDir/default.sql
         start
+        sleep 12
+        seed
+        exit
     fi
 
     if [ "$SEED" = "select" ]
@@ -249,18 +242,25 @@ then
             fi
         done 
         # ls -ld "$dumpDir/$opt"
-        cp "$dumpDir/$opt" "$seedDir/$opt"
+        # cp "$dumpDir/$opt" "$seedDir/$opt"
+        SEED="$opt"
         start
+        sleep 12
+        seed
         exit
     fi
+seed () {
+    # seed dat
+    echo "$SEED"
+}
 # else    
-#     # isRunningMsg
+#     isRunningMsg
 fi
 
 if [ "$1" = "stop" ]
 then
     stop
-# fi
+fi
 
 elif [ "$1" = "restart" ]
 then
