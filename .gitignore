@@ -1,12 +1,12 @@
 src/backend/
 src/backend/*
 
-src/database/dump/*
-!src/database/dump
-!src/database/dump/master-dev.sql
 src/database/.db/
 src/database/.db/*
 src/database/.db*
+src/database/dump/*
+!src/database/dump
+!src/database/dump/master-dev.sql
 
 src/files/wp-content/themes/*
 

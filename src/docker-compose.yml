@@ -1,28 +1,39 @@
-wordpress:
-  image: wordpress
-  volumes:
-  - ./backend:/var/www/html
-  # - ./files/wp-config.php:/var/www/html/wp-config.php
-  # - ./files/wp-content:/var/www/html/wp-content
-  links:
-    - wordpress_db:mysql
-  ports:
-    - 8080:80
-wordpress_db:
-  image: mysql
-  command: --default-authentication-plugin=mysql_native_password
-  restart: always
-  environment:
-    MYSQL_ROOT_PASSWORD: password
-  volumes:
-    - ./database/.db:/var/lib/mysql
-    - ./database/seed:/docker-entrypoint-initdb.d
-phpmyadmin:
-  image: corbinu/docker-phpmyadmin
-  links:
-    - wordpress_db:mysql
-  ports:
-    - 8081:80
-  environment:
-    MYSQL_USERNAME: root
-    MYSQL_ROOT_PASSWORD: password
+version: '3'
+services:
+  wordpress:
+    image: wordpress
+    volumes:
+    - ./backend:/var/www/html
+    # - ./files/wp-config.php:/var/www/html/wp-config.php
+    # - ./files/wp-content:/var/www/html/wp-content
+    links:
+      - wordpress_db:mysql
+    ports:
+      - 8080:80
+  wordpress_db:
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+    volumes:
+      # - ./database/seed:/docker-entrypoint-initdb.d
+      - ./database/.db:/var/lib/mysql
+  phpmyadmin:
+    image: corbinu/docker-phpmyadmin
+    links:
+      - wordpress_db:mysql
+    ports:
+      - 8081:80
+    environment:
+      MYSQL_USERNAME: root
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_PORT_3306_TCP_ADDR: wordpress_db
+  wpcli:
+    image: wordpress:cli
+    user: xfs
+    volumes:
+      - ./backend:/var/www/html
+    depends_on:
+      - wordpress
+      - wordpress_db
