@@ -292,7 +292,7 @@ then
     # prompt y/n to update
     read -p "Update now (y/n)?" choice
     case "$choice" in 
-        y|Y ) echo "yes";;
+        y|Y ) checkUpdate;;
         n|N ) echo "skipping update";;
         * ) echo "invalid";;
     esac
