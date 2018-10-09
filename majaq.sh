@@ -104,10 +104,10 @@ updateBackend () {
     echo "Checking backend for updates"
     if [ -d "$working_dir/src/backend" ]
     then
+        installBackend
+    else
         git -C $working_dir/src/backend fetch
         git -C $working_dir/src/backend pull
-    else
-        installBackend
     fi
 }
 
