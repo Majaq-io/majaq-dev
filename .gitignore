@@ -1,8 +1,14 @@
 src/backend/
 src/backend/*
 
+src/database/seed/*
+src/database/dump/*
+src/database/dump/default.sql
 src/database/.db/
 src/database/.db/*
+src/database/.db*
+
+src/files/wp-content/themes/*
 
 daBoss.md
 
