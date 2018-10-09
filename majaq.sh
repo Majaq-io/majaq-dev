@@ -96,12 +96,15 @@ checkUpdate () {
         echo "Up to date"
     else
         echo "Update available"
-        cd $working_dir
-        git fetch origin master
-        git pull
-        exit
+        update
     fi
     # echo $updateVersion
+}
+
+update () {
+    cd $working_dir
+    git fetch origin master
+    git pull
 }
 
 updateBackend () {
@@ -288,11 +291,10 @@ then
 
 elif [ "$1" = "update" ]
 then
-    checkUpdate
     # prompt y/n to update
     read -p "Update now (y/n)?" choice
     case "$choice" in 
-        y|Y ) checkUpdate;;
+        y|Y ) update;;
         n|N ) echo "skipping update";;
         * ) echo "invalid";;
     esac
