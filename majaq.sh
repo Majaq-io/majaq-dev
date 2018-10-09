@@ -17,6 +17,7 @@ isRunning () {
     then
         RUNNING=1
         ID=$IS_RUNNING
+        echo "$ID"
     else
         RUNNING=0
     fi
@@ -52,20 +53,20 @@ start () {
         updateBackend
         echo "Starting...."
         sleep 6
-        # cd $working_dir/src
         docker-compose -f $working_dir/src/docker-compose.yml up -d
-        if [ -f "$working_dir/src/files/wp-config.php" ]
+        if [ -f "$working_dir/src/files/wp-config.php" ] && [ -f "$working_dir/src/backend/wp-config.php" ] 
         then
             rsync -s $working_dir/src/files/wp-config.php $working_dir/src/backend/wp-config.php
+        else
+            cp $working_dir/src/files/wp-config.php $working_dir/src/backend/wp-config.php
         fi
 
         if [ -d "$working_dir/src/files/wp-content" ]
         then
-            # cd $working_dir/src
-            docker-compose  -f $working_dir/src/docker-compose.yml run wordpress rm -rf /var/www/html/wp-content
+            docker-compose  -f $working_dir/src/docker-compose.yml run --rm wordpress rm -rf /var/www/html/wp-content
             rsync -a $working_dir/src/files/wp-content/ $working_dir/src/backend/wp-content/
-        # else
-            # cp -r $working_dir/src/backend/wp-content/ $working_dir/src/files
+        else
+            cp -r $working_dir/src/backend/wp-content/ $working_dir/src/files
         fi
         isRunning
         isRunningMsg
@@ -81,12 +82,10 @@ stop () {
         exit
     fi
     echo "Stopping...."
-    # cd src
-    # cd $working_dir/src
     docker-compose  -f $working_dir/src/docker-compose.yml down
     rsync -a $working_dir/src/backend/wp-content/ $working_dir/src/files/wp-content/
     rsync -a $working_dir/src/backend/wp-config.php $working_dir/src/files/wp-config.php
-    rm -rf $working_dir/src/database/seed/*
+    # rm -rf $working_dir/src/database/seed/*
     echo "Majaq has stopped"
     exit
 }
@@ -167,7 +166,7 @@ checkDependencies () {
 }
 
 selectSeed () {
-    # no seed flag used or selected, jsut start
+    # no seed flag used or selected, just start
     if [ "$SEED" = null ]
     then
         start
@@ -175,23 +174,23 @@ selectSeed () {
 
     elif [ "$SEED" = "default" ]
     then
-        # echo "copy dump/default.sql to seed/default.sql"
-        # cp $dumpDir/default.sql $seedDir/default.sql
         start
         sleep 3
-        echo "running seed function, seed: $SEED"
+        SEED=master-dev.sql
+        seed
         exit
 
     elif [ "$SEED" = "select" ]
     then
-        prompt="Please select a dump to seed:"
+        prompt="Please select (1-*) dump to seed:"
         options=( $(find "$dumpDir" -type f -path "*.sql" -printf  "%f\n" | xargs -0) )
         PS3="$prompt "
         select opt in "${options[@]}" "Quit" ; do 
             if (( REPLY == 1 + ${#options[@]} )) ; then
                 exit
             elif (( REPLY > 0 && REPLY <= ${#options[@]} )) ; then
-                echo  "You picked $(basename $opt) which is file $REPLY"
+                # echo  "seeding database $(basename $opt) which is file $REPLY"
+                echo  "Seeding database dump $(basename $opt)"
                 break
             else
                 echo "Invalid option. Try another one."
@@ -200,10 +199,37 @@ selectSeed () {
         SEED="$opt"
         start
         sleep 3
-        echo "running seed function, seed: $SEED"
+        seed
         exit
     fi
-# ========================
+}
+
+seed () {
+    if [ "$1" != "dump" ]
+    then
+        echo "seeding"
+        echo "$SEED"
+        # rm db
+        REMOVE_db='mysqladmin -u root -ppassword drop wordpress'
+        docker-compose -f $working_dir/src/docker-compose.yml exec wordpress_db $REMOVE_db 
+        # create db
+        CREATE_DB='mysqladmin -u root -ppassword create wordpress'
+        docker-compose -f $working_dir/src/docker-compose.yml exec wordpress_db $CREATE_DB
+        docker-compose -f $working_dir/src/docker-compose.yml exec -T wordpress_db mysql -u root -ppassword wordpress < $working_dir/src/database/dump/$SEED
+    fi
+}
+
+dump () {
+    echo "------------------------------------------------------"
+    echo "enter name of dump file"
+    read -e DUMP_file
+    echo "You have named the dump "$DUMP_file""
+    # DUMP_file="dump_file"
+    echo "dumping src/database/dump/$DUMP_file.sql"
+    docker-compose -f $working_dir/src/docker-compose.yml exec wordpress_db mysqldump -u root -ppassword wordpress > $dumpDir/$DUMP_file.sql 
+    sed -i 1,1d $dumpDir/$DUMP_file.sql
+    echo "dumping complete"
+    echo "------------------------------------------------------"
 
 }
 
@@ -227,11 +253,11 @@ EOF
 isRunning
 if [ "$1" = "start" ] && [ -z $2 ] && [ -z $3 ]
 then
-    echo "$RUNNING"
     if [ "$RUNNING" = 0 ]
     then
         start
     else
+        echo "Majaq is already running"
         isRunningMsg
         exit
     fi
@@ -242,10 +268,6 @@ if [ "$1" = "start" ] && [ "$2" = "-s" ] && [ -z $3 ]
 then
     SEED="default"
     selectSeed
-
-    # isRunningMsg
-    # echo "Stop before seeding with:"
-    # echo "  majaq stop"
 
 # ./majaq.sh start -s select (prompts to select dump)
 elif [ "$1" = "start" ] && [ "$2" = "-s" ] && [ "$3" = "select" ]
@@ -271,38 +293,32 @@ then
     echo "-s select"
 fi
 
-echo "$0 $1 $2"
+# # deal with seed
+# # check if not running and
+# isRunning
 
+# if [ "$RUNNING" = "0" ]
+# then
+#     echo "$SEED"
 
-# deal with seed
-# check if not running and
-isRunning
-
-if [ "$RUNNING" = "0" ]
-then
-    echo "$SEED"
-
-# else    
-#     isRunningMsg
-fi
+# # else    
+# #     isRunningMsg
+# fi
 
 if [ "$1" = "stop" ]
 then
     stop
-# fi
 
 elif [ "$1" = "restart" ]
 then
     stop
     sleep 5
     start
-# fi
 
 elif [ "$1" = "-v" ] || [ "$1" = "--version" ]
 then
     echo $version
     exit
-# fi
 
 elif [ "$1" = "-h" ] || [ "$1" = "--help" ]
 then
@@ -330,6 +346,12 @@ then
     updateBackend
     exit
 
+
+elif [ "$1" = "dump" ]
+then
+    dump
+    exit
+
 elif [ "$1" = "" ]
 then
     echo "missing arguments"
@@ -339,4 +361,3 @@ else
     echo "invalid arguments: $1"
     usage
 fi
-
