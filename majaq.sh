@@ -5,7 +5,7 @@ working_dir=`dirname $0`
 
 ##### functions
 installBackend () {
-    if [ -d "$working_dir/backend/.git" ]
+    if [ -d "$working_dir/src/backend/.git" ]
     then
         echo "installing majaq-dev-backend in ./src/backend"
         # rm -rf $working_dir/src/backend
@@ -25,6 +25,7 @@ start () {
     else 
         echo "Majaq version $version"
         checkUpdate
+        updateBackend
         echo "Starting...."
         # cd $working_dir/src
         docker-compose -f $working_dir/src/docker-compose.yml up -d
@@ -90,17 +91,20 @@ checkUpdate () {
         echo "Up to date"
     else
         echo "Update available"
+        cd $working_dir
+        git fetch origin master
+        git pull
     fi
     # echo $updateVersion
 }
 
-update () {
+updateBackend () {
     echo "now updating......"
-    if [ -d "$working_dir/backend/.git" ]
+    if [ -d "$working_dir/src/backend/.git" ]
     then
         installBackend
     else
-        cd $working_dir/backend
+        cd $working_dir/src/backend
         git fetch origin master
         git pull
     fi
