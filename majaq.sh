@@ -17,7 +17,7 @@ isRunning () {
     then
         RUNNING=1
         ID=$IS_RUNNING
-        echo "$ID"
+        # echo "$ID"
     else
         RUNNING=0
     fi
@@ -211,11 +211,11 @@ seed () {
         echo "$SEED"
         # rm db
         REMOVE_db='mysqladmin -u root -ppassword -f drop wordpress'
-        docker-compose -f $working_dir/src/docker-compose.yml -d exec wordpress_db $REMOVE_db 2>/dev/null
+        docker-compose -f $working_dir/src/docker-compose.yml exec wordpress_db $REMOVE_db &>/dev/null
         # create db
         CREATE_DB='mysqladmin -u root -ppassword create wordpress'
-        docker-compose -f $working_dir/src/docker-compose.yml -d exec wordpress_db $CREATE_DB 2>/dev/null
-        docker-compose -f $working_dir/src/docker-compose.yml -d exec wordpress_db mysql -u root -ppassword wordpress < $working_dir/src/database/dump/$SEED 2>/dev/null
+        docker-compose -f $working_dir/src/docker-compose.yml exec wordpress_db $CREATE_DB &>/dev/null
+        docker-compose -f $working_dir/src/docker-compose.yml exec -T wordpress_db mysql -u root -ppassword wordpress < $working_dir/src/database/dump/$SEED &>/dev/null
     fi
 }
 
