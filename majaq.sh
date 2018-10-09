@@ -8,7 +8,7 @@ installBackend () {
     if [ -d "$working_dir/src/backend/.git" ]
     then
         echo "installing majaq-dev-backend in ./src/backend"
-        # rm -rf $working_dir/src/backend
+        rm -rf $working_dir/src/backend
         git clone git@github.com:Majaq-io/majaq-dev-backend.git $working_dir/src/backend
         rsync -a $working_dir/src/backend/wp-content/ $working_dir/src/files/wp-content/
         rsync -a $working_dir/src/backend/wp-config.php $working_dir/src/files/wp-config.php
@@ -94,22 +94,19 @@ checkUpdate () {
         cd $working_dir
         git fetch origin master
         git pull
+        exit
     fi
     # echo $updateVersion
 }
 
 updateBackend () {
     echo "Checking backend for updates"
-    if [ -d !$working_dir/src/backend/.git ]
+    if [ -d "$working_dir/src/backend/.git" ]
     then
-        installBackend
-    else
-        # cd $working_dir/src/backend
         git -C $working_dir/src/backend fetch
         git -C $working_dir/src/backend pull
-        # git fetch
-        # git pull
-        # cd $working_dir
+    else
+        installBackend
     fi
 }
 
@@ -294,6 +291,7 @@ then
         n|N ) echo "skipping update";;
         * ) echo "invalid";;
     esac
+    updateBackend
     exit
 
 elif [ "$1" = "" ]
