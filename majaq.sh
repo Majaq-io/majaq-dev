@@ -4,10 +4,12 @@ scriptRepoUrl="https://raw.githubusercontent.com/Majaq-io/majaq-dev/master/majaq
 working_dir=`dirname $0`
 
 ##### functions
-install () {
-    echo "installing...."
+installBackend () {
+    echo "installing majaq-dev-backend in ./src/backend"
     rm -rf $working_dir/src/backend
     git clone git@github.com:Majaq-io/majaq-dev-backend.git $working_dir/src/backend
+    rsync -a $working_dir/src/backend/wp-content/ $working_dir/src/files/wp-content/
+    rsync -a $working_dir/src/backend/wp-config.php $working_dir/src/files/wp-config.php
     exit
 }
 
@@ -136,11 +138,11 @@ isRunning () {
 }
 
 usage () {
+    # majaq install [-f | --fresh]
 cat << EOF
 usage: 
-    majaq install [-f | --fresh]
-    majaq start [-s | --seed file_in_src_database_seed.sql]
-    majaq stop [-e | --export file_to_src_database_export.sql]
+    majaq start [-s | --seed [select]]
+    majaq stop [-d | --dump ]
     majaq restart
     majaq -v | --version
     majaq update
@@ -154,18 +156,9 @@ EOF
 
 ###### parameters passes
 
-if [ "$1" = "install" ]
-then
-    install
-fi
-
-# if [ "$1" = "start" ] && [ -z "$2" ]
+# if [ "$1" = "install" ]
 # then
-#     isRunning
-#     if [ "$RUNNING" = 0 ]
-#     then
-#         start
-#     fi
+#     install
 # fi
 
 if [ "$1" = "start" ] && [ -z $2 ] && [ -z $3 ]
@@ -191,8 +184,7 @@ fi
 if [ "$1" = "start" ] && [ "$2" = "-s" ] && [ -z $3 ]
 then
     SEED="default"
-    # selectSeed
-    # seed
+
 elif [ "$2" = "-s" ] && [ "$3" = "select" ]
 then
     SEED="select"
@@ -202,11 +194,6 @@ then
     echo "valid options are:"
     echo "-s"
     echo "-s select"
-    # SEED="$3"
-# elif [ "$2" = "-s" ] && [ "$3" != "" ]
-# then
-    # SEED="$3"
-    # seed
 fi
 
 isRunning
