@@ -1,5 +1,5 @@
 #!/bin/bash
-version="1.0"
+version="1.1"
 scriptRepoUrl="https://raw.githubusercontent.com/Majaq-io/majaq-dev/master/majaq.sh"
 working_dir=`dirname $0`
 
