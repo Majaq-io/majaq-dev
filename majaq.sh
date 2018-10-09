@@ -8,6 +8,7 @@ install () {
     echo "installing...."
     rm -rf $working_dir/src/backend
     git clone git@github.com:Majaq-io/majaq-dev-backend.git $working_dir/src/backend
+    exit
 }
 
 start () {
@@ -43,7 +44,7 @@ start () {
 
 stop () {
     isRunning
-    if [ $RUNNING = 0 ]
+    if [ "$RUNNING" = 0 ]
     then
         isRunningMsg
         exit
@@ -54,6 +55,7 @@ stop () {
     docker-compose  -f $working_dir/src/docker-compose.yml down
     rsync -a $working_dir/src/backend/wp-content/ $working_dir/src/files/wp-content/
     rsync -a $working_dir/src/backend/wp-config.php $working_dir/src/files/wp-config.php
+    rm -rf $working_dir/src/database/seed/*
     echo "Majaq has stopped"
     exit
 }
@@ -66,18 +68,12 @@ isRunningMsg () {
     elif [ $RUNNING = 1 ]
     then
         echo "Majaq is running"
+        exit
     fi
-}
-
-restart () {
-    stop
-    sleep 5
-    start
 }
 
 checkUpdate () {
     echo "checking update"
-    # scriptRepoUrl="test"
     updateVersion=`curl -s $scriptRepoUrl 2> /dev/null | head -n2 | sed -n '2 p'`
     updateVersion=${updateVersion#"version="}
     updateVersion="${updateVersion%\"}"
@@ -86,11 +82,15 @@ checkUpdate () {
     # echo $updateVersion
     if [ "$updateVersion" = "$version" ]
     then
-        echo "up to date"
+        echo "Up to date"
     else
-        echo "update available"
+        echo "Update available"
     fi
     # echo $updateVersion
+}
+
+update () {
+    echo "now updating......"
 }
 
 checkDependencies () {
@@ -135,36 +135,6 @@ isRunning () {
     fi
 }
 
-seed () {
-    # echo "seeding: $SEED"
-    if [ $SEED = "default" ]
-    then
-        echo "Seeding default: $SEED"
-    fi
-
-    if [ $SEED = "select" ]
-    then
-        seedDir="$working_dir/src/database/seed"
-        dumpDir="$working_dir/src/database/dump"
-        prompt="Please select a dump to seed:"
-        # cd "$working_dir/src/database/dump"
-        options=( $(find "$working_dir/src/database/dump" -type f -path "*.sql" -printf  "%f\n" | xargs -0) )
-        PS3="$prompt "
-        select opt in "${options[@]}" "Quit" ; do 
-            if (( REPLY == 1 + ${#options[@]} )) ; then
-                exit
-            elif (( REPLY > 0 && REPLY <= ${#options[@]} )) ; then
-                echo  "You picked $(basename $opt) which is file $REPLY"
-                break
-            else
-                echo "Invalid option. Try another one."
-            fi
-        done 
-        # ls -ld "$dumpDir/$opt"
-        cp "$dumpDir/$opt" "$seedDir/$opt"
-    fi
-}
-
 usage () {
 cat << EOF
 usage: 
@@ -187,23 +157,22 @@ EOF
 if [ "$1" = "install" ]
 then
     install
+fi
+
+# if [ "$1" = "start" ] && [ -z "$2" ]
+# then
+#     isRunning
+#     if [ "$RUNNING" = 0 ]
+#     then
+#         start
+#     fi
 # fi
 
-elif [ "$1" = "start" ]
+if [ "$1" = "start" ] && [ -z $2 ] && [ -z $3 ]
 then
-    if [ "$2" = "-s" ] || [ "$2" = "--seed" ] && [ -z "$3" ]
-    then
-        SEED="default"
-        # selectSeed
-        seed
-    elif [ "$2" = "-s" ] && [ "$3" != "" ]
-    then
-        SEED="$3"
-        seed
-    fi
-    # echo "$1 $2 $SEED"
     isRunning
-    if [ $RUNNING = 0 ]
+    # echo "$RUNNING"
+    if [ "$RUNNING" = 0 ]
     then
         start
     else
@@ -213,28 +182,93 @@ then
         echo "  or"
         echo "majaq stop"
         echo "majaq start -s"
+        exit
     fi
     # sudo chown -R $USER $working_dir/src/backend
-# fi
+fi
+# +++===============================================
+# +++===============================================
+if [ "$1" = "start" ] && [ "$2" = "-s" ] && [ -z $3 ]
+then
+    SEED="default"
+    # selectSeed
+    # seed
+elif [ "$2" = "-s" ] && [ "$3" = "select" ]
+then
+    SEED="select"
+elif [ "$2" = "-s" ] && [ "$3" != "" ]
+then
+    echo "invalid argument: $3"
+    echo "valid options are:"
+    echo "-s"
+    echo "-s select"
+    # SEED="$3"
+# elif [ "$2" = "-s" ] && [ "$3" != "" ]
+# then
+    # SEED="$3"
+    # seed
+fi
 
-elif [ "$1" = "stop" ]
+isRunning
+if [ "$RUNNING" = "0" ]
+then
+    # echo "$SEED"
+    seedDir="$working_dir/src/database/seed"
+    dumpDir="$working_dir/src/database/dump"
+    if [ "$SEED" = "default" ]
+    then
+        echo "copy dump/default.sql to seed/default.sql"
+        cp $dumpDir/default.sql $seedDir/default.sql
+        start
+    fi
+
+    if [ "$SEED" = "select" ]
+    then
+        prompt="Please select a dump to seed:"
+        # cd "$working_dir/src/database/dump"
+        options=( $(find "$working_dir/src/database/dump" -type f -path "*.sql" -printf  "%f\n" | xargs -0) )
+        PS3="$prompt "
+        select opt in "${options[@]}" "Quit" ; do 
+            if (( REPLY == 1 + ${#options[@]} )) ; then
+                exit
+            elif (( REPLY > 0 && REPLY <= ${#options[@]} )) ; then
+                echo  "You picked $(basename $opt) which is file $REPLY"
+                break
+            else
+                echo "Invalid option. Try another one."
+            fi
+        done 
+        # ls -ld "$dumpDir/$opt"
+        cp "$dumpDir/$opt" "$seedDir/$opt"
+        start
+        exit
+    fi
+# else    
+#     # isRunningMsg
+fi
+
+if [ "$1" = "stop" ]
 then
     stop
 # fi
 
 elif [ "$1" = "restart" ]
 then
-    restart
+    stop
+    sleep 5
+    start
 # fi
 
-elif [ "$1" = "-v" ] | [ "$1" = "--version" ]
+elif [ "$1" = "-v" ] || [ "$1" = "--version" ]
 then
     echo $version
+    exit
 # fi
 
-elif [ "$1" = "-h" ] | [ "$1" = "--help" ]
+elif [ "$1" = "-h" ] || [ "$1" = "--help" ]
 then
     usage
+    exit
 
 elif [ "$1" = "status" ]
 then
@@ -244,6 +278,18 @@ then
 elif [ "$1" = "-check-dependencies" ]
 then
     checkDependencies
+
+elif [ "$1" = "update" ]
+then
+    checkUpdate
+    # prompt y/n to update
+    read -p "Update now (y/n)?" choice
+    case "$choice" in 
+        y|Y ) echo "yes";;
+        n|N ) echo "skipping update";;
+        * ) echo "invalid";;
+    esac
+    exit
 
 elif [ "$1" = "" ]
 then
