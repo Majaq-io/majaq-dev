@@ -206,7 +206,7 @@ seed () {
         echo "$SEED"
         # rm db
         REMOVE_db='mysqladmin -u root -ppassword -f drop wordpress'
-        docker-compose -f $working_dir/src/docker-compose.yml exec wordpress_db $REMOVE_db &>/dev/null
+        # docker-compose -f $working_dir/src/docker-compose.yml exec wordpress_db $REMOVE_db &>/dev/null
         # create db
         CREATE_DB='mysql -u root -ppassword -f create wordpress'
         docker-compose -f $working_dir/src/docker-compose.yml exec wordpress_db $CREATE_DB &>/dev/null
