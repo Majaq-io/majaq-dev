@@ -9,6 +9,8 @@ src/database/dump/*
 !src/database/dump/master-dev.sql
 
 src/files/wp-content/*
+src/files/*
+!src/files/wp-config.php
 
 daBoss.md
 
