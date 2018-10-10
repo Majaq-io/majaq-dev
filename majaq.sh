@@ -78,8 +78,8 @@ stop () {
     fi
     echo "Stopping...."
     docker-compose  -f $working_dir/src/docker-compose.yml down
-    rsync -a $working_dir/src/backend/wp-content/ $working_dir/src/files/wp-content/
-    rsync -a $working_dir/src/backend/wp-config.php $working_dir/src/files/wp-config.php
+    cp -r $working_dir/src/backend/wp-content/* $working_dir/src/files/wp-content/*
+    cp $working_dir/src/backend/wp-config.php $working_dir/src/files/wp-config.php
     # rm -rf $working_dir/src/database/seed/*
     echo "Majaq has stopped"
     exit
