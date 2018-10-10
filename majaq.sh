@@ -54,17 +54,12 @@ start () {
         echo "Starting...."
         sleep 6
         docker-compose -f $working_dir/src/docker-compose.yml up -d
-        if [ -f "$working_dir/src/files/wp-config.php" ] && [ -f "$working_dir/src/backend/wp-config.php" ] 
-        then
-            rsync -s $working_dir/src/files/wp-config.php $working_dir/src/backend/wp-config.php
-        else
-            cp $working_dir/src/files/wp-config.php $working_dir/src/backend/wp-config.php
-        fi
+        cp $working_dir/src/files/wp-config.php $working_dir/src/backend/wp-config.php
 
         if [ -d "$working_dir/src/files/wp-content" ]
         then
             docker-compose  -f $working_dir/src/docker-compose.yml run --rm wordpress rm -rf /var/www/html/wp-content
-            rsync -a $working_dir/src/files/wp-content/ $working_dir/src/backend/wp-content/
+            cp $working_dir/src/files/wp-content/ $working_dir/src/backend/wp-content/
         else
             cp -r $working_dir/src/backend/wp-content/ $working_dir/src/files
         fi
