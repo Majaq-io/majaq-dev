@@ -213,7 +213,7 @@ seed () {
         REMOVE_db='mysqladmin -u root -ppassword -f drop wordpress'
         docker-compose -f $working_dir/src/docker-compose.yml exec wordpress_db $REMOVE_db &>/dev/null
         # create db
-        CREATE_DB='mysql -u root -ppassword -e "CREATE DATABASE test"'
+        CREATE_DB='mysql -u root -ppassword -e create wordpress'
         docker-compose -f $working_dir/src/docker-compose.yml exec wordpress_db $CREATE_DB &>/dev/null
         docker-compose -f $working_dir/src/docker-compose.yml exec -T wordpress_db mysql -u root -ppassword wordpress < $working_dir/src/database/dump/$SEED &>/dev/null
     fi
