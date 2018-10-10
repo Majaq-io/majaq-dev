@@ -61,7 +61,7 @@ start () {
             docker-compose  -f $working_dir/src/docker-compose.yml run --rm wordpress rm -rf /var/www/html/wp-content
             cp $working_dir/src/files/wp-content/ $working_dir/src/backend/wp-content/
         else
-            cp -r $working_dir/src/backend/wp-content/ $working_dir/src/files
+            cp -R $working_dir/src/backend/wp-content/ $working_dir/src/files
         fi
         isRunning
         isRunningMsg
