@@ -8,7 +8,7 @@ src/database/dump/*
 !src/database/dump
 !src/database/dump/master-dev.sql
 
-!src/files/mu-plugins
+!src/files/wp-content/mu-plugins
 !src/files/wp-content/themes/*
 !src/files/wp-content/plugins/*
 !src/files/wp-config.php
