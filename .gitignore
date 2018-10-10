@@ -11,8 +11,8 @@ src/database/dump/*
 src/files/wp-content/*
 src/files
 !src/files/mu-plugins
-!src/files/themes
-!src/files/plugins
+!src/files/wp-content/themes/*
+!src/files/wp-content/plugins/*
 !src/files/wp-config.php
 
 daBoss.md
