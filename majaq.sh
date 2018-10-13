@@ -36,6 +36,17 @@ isRunning () {
     fi
 }
 isRunning
+
+checkForUpdate () {
+    changed=0
+    git remote update && git status -uno | grep -q 'Your branch is behind' && changed=1
+    if [ $changed = 1 ] ;then
+        echo "Update available, updating now"
+        git fetch --all
+        git reset --hard origin/master
+        git pull origin master
+    fi
+}
 ####################################################
 # parameters
 
