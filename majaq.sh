@@ -122,6 +122,12 @@ elif [ "$1" = "status" ] || [ "$1" = "--status" ] ;then
 elif [ "$1" = "-v" ] || [ "$1" = --version ] ;then
     echo 'Majaq Dev version '$version
 
+# re-seed [--seed]
+elif [ "$1" = "--seed" ] ;then
+    $_container down
+    sudo rm -rf $_pwd/lib/.db
+    exit
+
 # dump
 elif [ "$1" = "--dump" ] ;then
     echo 'Dumping database'
