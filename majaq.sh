@@ -1,5 +1,5 @@
 #!/bin/bash
-version="1.3"
+version="1.4"
 
 _scriptUrl="https://raw.githubusercontent.com/Majaq-io/majaq-dev/master/majaq.sh"
 _pwd=`dirname $0`
