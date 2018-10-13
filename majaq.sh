@@ -63,12 +63,10 @@ checkForUpdate () {
         if [ "$RUNNING" = 1 ] ;then
             echo "Majaq Dev stopping, you must restart"
             $_container down
-            sudo rm -rf $_pwd/lib/.db
-        else
-            sudo rm -rf $_pwd/lib/.db
+            sleep 4
         fi
+        sudo rm -rf $_pwd/lib/.db
         
-
     else
         echo "Majaq Dev database is current"
     fi
@@ -132,7 +130,10 @@ elif [ "$1" = "-v" ] || [ "$1" = --version ] ;then
 
 # re-seed [--seed]
 elif [ "$1" = "--seed" ] ;then
-    $_container down
+    if [ "$RUNNING" = 1 ] ;then
+        $_container down
+        sleep 4
+    fi
     sudo rm -rf $_pwd/lib/.db
     exit
 
