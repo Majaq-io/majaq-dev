@@ -78,6 +78,7 @@ if [ -z $1 ] || [ "$1" = "start" ] ;then
     else
         checkForUpdate
         $_container up -d
+        echo "Majaq Dev v$version is now runnning"
         exit
     fi
 
@@ -88,6 +89,7 @@ elif [ "$1" = "stop" ] ;then
         exit
     else
         $_container down
+        echo "Majaq Dev v$version has stopped"
         exit
     fi
 
