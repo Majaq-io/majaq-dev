@@ -121,6 +121,20 @@ elif [ "$1" = "status" ] || [ "$1" = "--status" ] ;then
 elif [ "$1" = "-v" ] || [ "$1" = --version ] ;then
     echo 'Majaq Dev version '$version
 
+# dump
+elif [ "$1" = "--dump" ] ;then
+    echo 'Dumping database'
+    _os="`uname`"
+    _now=$(date +"%m_%d_%Y")
+    _file="$_dumpDir/master-dev_$_now.sql"
+    $_container exec db mysqldump -u root -ppassword wordpress > $_file
+
+    if [[ $_os == "Darwin"* ]] ; then
+        sed -i '.bak' 1,1d $_file
+    else
+        sed -i 1,1d $_file # Removes the password warning from the file
+    fi
+
 # if an invalid parameter was passed
 else
     echo "invalid argument $0 $1"
