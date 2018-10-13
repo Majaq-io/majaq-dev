@@ -39,12 +39,15 @@ isRunning
 
 checkForUpdate () {
     changed=0
+    echo "Checking for update"
     git remote update && git status -uno | grep -q 'Your branch is behind' && changed=1
     if [ $changed = 1 ] ;then
         echo "Update available, updating now"
         git fetch --all
         git reset --hard origin/master
         git pull origin master
+    else
+        echo "Update to date"
     fi
 }
 ####################################################
@@ -56,6 +59,7 @@ if [ -z $1 ] || [ "$1" = "start" ] ;then
         echo "Majaq Dev v$version is already runnning"
         exit
     else
+        checkForUpdate
         $_container up -d
         exit
     fi
