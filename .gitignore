@@ -1,0 +1,9 @@
+notes.md
+
+lib/.db
+lib/backend
+lib/dump
+
+!lib/docker-compose.yml
+!lib/config
+!lib/config/*
