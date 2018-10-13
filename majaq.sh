@@ -78,7 +78,8 @@ if [ -z $1 ] || [ "$1" = "start" ] ;then
     else
         checkForUpdate
         $_container up -d
-        echo "Majaq Dev v$version is now runnning"
+        echo "Majaq Dev v$version is now runnning at"
+        echo "http://localhost:8080"
         exit
     fi
 
