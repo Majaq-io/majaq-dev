@@ -43,9 +43,9 @@ checkForUpdate () {
     git remote update && git status -uno | grep -q 'Your branch is behind' && _update=1
     if [ $_update = 1 ] ;then
         echo "Update available, updating now"
-        git fetch --all
-        git reset --hard origin/master
-        git pull origin master
+        git fetch --all  >/dev/null
+        git reset --hard origin/master  >/dev/null
+        git pull origin master  >/dev/null
     else
         echo "Update to date"
     fi
