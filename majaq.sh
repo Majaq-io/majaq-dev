@@ -38,10 +38,10 @@ isRunning () {
 isRunning
 
 checkForUpdate () {
-    changed=0
+    _update=0
     echo "Checking for update"
-    git remote update && git status -uno | grep -q 'Your branch is behind' && changed=1
-    if [ $changed = 1 ] ;then
+    git remote update && git status -uno | grep -q 'Your branch is behind' && _update=1
+    if [ $_update = 1 ] ;then
         echo "Update available, updating now"
         git fetch --all
         git reset --hard origin/master
