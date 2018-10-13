@@ -3,6 +3,7 @@ version="1.5"
 
 _scriptUrl="https://raw.githubusercontent.com/Majaq-io/majaq-dev/master/majaq.sh"
 _pwd=`dirname $0`
+_seed=$_pwd/lib/config/seed/master-dev.sql
 _dumpDir="$_pwd/lib/dump"
 _script=`basename "$0"`                         # && echo "this script -          $_script"
 _scriptName=`echo $_script | cut -d'.' -f1`     # && echo "this script name -     $_scriptName"
@@ -40,6 +41,8 @@ isRunning
 checkForUpdate () {
     _update=0
     echo "Checking for update"
+    # get md5 of surrent seed
+    lastSeed=$(md5sum "$_seed")
     git remote update > /dev/null 2>&1 && git status -uno | grep -q 'Your branch is behind' && _update=1 
     if [ $_update = 1 ] ;then
         echo "Update available, updating now"
@@ -52,6 +55,17 @@ checkForUpdate () {
     else
         echo "Update to date"
     fi
+
+    # reseed if seed is new
+    currentSeed=$(md5sum "$_seed")
+    if [ "$lastSeed" != "$currentSeed" ] ;then
+        echo "Majaq Dev database is Not current"
+        echo "Re-seeding database"
+        $_container down -v
+    else
+        echo "Majaq Dev database is current"
+    fi
+
 }
 ####################################################
 # parameters
@@ -73,7 +87,6 @@ elif [ "$1" = "stop" ] ;then
         echo "Majaq Dev v$version is not running"
         exit
     else
-        # $_container stop
         $_container down
         exit
     fi
