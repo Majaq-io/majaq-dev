@@ -45,7 +45,7 @@ checkForUpdate () {
         echo "Update available, updating now"
         git fetch --all  --quiet
         git reset --hard origin/master  --quiet
-        git pull origin master  > /dev/null 2>&1
+        git pull origin master  --quiet
     else
         echo "Update to date"
     fi
