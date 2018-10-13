@@ -1,5 +1,5 @@
 #!/bin/bash
-version="1.2"
+version="1.3"
 
 _scriptUrl="https://raw.githubusercontent.com/Majaq-io/majaq-dev/master/majaq.sh"
 _pwd=`dirname $0`
@@ -46,6 +46,8 @@ checkForUpdate () {
         git fetch --all  --quiet
         git reset --hard origin/master  --quiet
         git pull origin master  --quiet
+        $_script
+        exit
     else
         echo "Update to date"
     fi
