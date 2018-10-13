@@ -50,10 +50,9 @@ checkForUpdate () {
         git reset --hard origin/master  --quiet
         git pull origin master  --quiet
         echo "Update complete, restarting script"
-        $_pwd/$_script
-        exit
     else
         echo "Update to date"
+        return
     fi
 
     # reseed if seed is new
@@ -65,6 +64,8 @@ checkForUpdate () {
     else
         echo "Majaq Dev database is current"
     fi
+    $_pwd/$_script
+    exit
 
 }
 ####################################################
