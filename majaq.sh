@@ -60,8 +60,14 @@ checkForUpdate () {
     if [ "$lastSeed" != "$currentSeed" ] ;then
         echo "Majaq Dev database is Not current"
         echo "Re-seeding database"
-        $_container down
-        sudo rm -rf $_pwd/lib/.db
+        if [ "$RUNNING" = 1 ] ;then
+            echo "Majaq Dev stopping, you must restart"
+            $_container down
+            sudo rm -rf $_pwd/lib/.db
+        else
+            sudo rm -rf $_pwd/lib/.db
+        fi
+        
 
     else
         echo "Majaq Dev database is current"
