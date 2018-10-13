@@ -47,7 +47,7 @@ checkForUpdate () {
         git reset --hard origin/master  --quiet
         git pull origin master  --quiet
         echo "Update complete, restarting script"
-        $_script
+        $_pwd/$_script
         exit
     else
         echo "Update to date"
