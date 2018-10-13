@@ -40,7 +40,7 @@ isRunning
 checkForUpdate () {
     _update=0
     echo "Checking for update"
-    git remote update --quiet > /dev/null 2>&1 && git status -uno | grep -q 'Your branch is behind' && _update=1 
+    git remote update > /dev/null 2>&1 && git status -uno | grep -q 'Your branch is behind' && _update=1 
     if [ $_update = 1 ] ;then
         echo "Update available, updating now"
         git fetch --all  --quiet
