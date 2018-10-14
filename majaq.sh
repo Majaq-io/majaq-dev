@@ -19,7 +19,6 @@ usage:
     $_scriptName stop
     $_scriptName restart
     $_scriptName -v or --version
-    $_scriptName -u or --update
     $_scriptName status or --status
 Report bugs to: dev-team@majaq.io
 EOF
