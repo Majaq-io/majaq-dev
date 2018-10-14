@@ -3,3 +3,4 @@ notes.md
 lib/.db
 lib/backend
 lib/dump
+lib/wp-perms.sh
