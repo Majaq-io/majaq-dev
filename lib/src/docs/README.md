@@ -35,23 +35,23 @@ you should be greeted with this documentation running locally on top of our back
 
 try some other links to services running
 
-phpMyAdmin @        http://localhost:8081
-Adminer @           http://localhost:8082
-searchAndReplace @  http://localhost:8083
++ phpMyAdmin @        http://localhost:8081
++ Adminer @           http://localhost:8082
++ searchAndReplace @  http://localhost:8083
 
 
 check out the rest api here
 site data:
-http://localhost:8080/wp-json/wp/v2/
++ [http://localhost:8080/wp-json/wp/v2/](http://localhost:8080/wp-json/wp/v2/)
 
 all pages:
-http://localhost:8080/wp-json/wp/v2/pages
++ [http://localhost:8080/wp-json/wp/v2/pages](http://localhost:8080/wp-json/wp/v2/pages)
 
-or just 10
-http://localhost:8080/wp-json/wp/v2/pages?per_page=10
+or just 10 pages
++ [http://localhost:8080/wp-json/wp/v2/pages?per_page=10](http://localhost:8080/wp-json/wp/v2/pages?per_page=10)
 
 or a specific page
-http://localhost:8080/wp-json/wp/v2/pages?slug=home
++ [http://localhost:8080/wp-json/wp/v2/pages?slug=home](http://localhost:8080/wp-json/wp/v2/pages?slug=home)
 
 menus:
 coming soon...... probably next
