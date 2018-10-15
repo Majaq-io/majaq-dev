@@ -4,13 +4,14 @@
 
 + To create a development workflow that bridges the gap for backend and front-end developers 
 + To containerize the entire backend development environment, so that everyone on the team is running the same exact setup
-+ To persist the backend files and database for each team member development environment.
++ To persist the backend files and database for each team member's local development environment.
 
 ## The Stack
 
 + [Docker](https://www.docker.com/) for containerizing the backend development environment.
     + containers used:
         + Wordpress
+        + Php
         + Nginx
         + Mysql
         + PhpMyAdmin
