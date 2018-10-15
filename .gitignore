@@ -4,3 +4,7 @@ lib/.db
 lib/backend
 lib/dump
 lib/wp-perms.sh
+
+node_modules/
+node_modules/**
+**/node_modules/**
