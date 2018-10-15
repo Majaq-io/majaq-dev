@@ -33,11 +33,14 @@ open up a browser and goto\
 you should be greeted with this documentation running locally on top of our backend.
 
 try some other links to services running\
-phpMyAdmin\       [http://localhost:8081](http://localhost:8081)
+phpMyAdmin\
+[http://localhost:8081](http://localhost:8081)
 
-Adminer\          [http://localhost:8082](http://localhost:8082)
+Adminer\
+[http://localhost:8082](http://localhost:8082)
 
-searchAndReplace\  [http://localhost:8083](http://localhost:8083)
+searchAndReplace\
+[http://localhost:8083](http://localhost:8083)
 
 check out the rest api here\
 site data:\
