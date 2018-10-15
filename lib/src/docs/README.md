@@ -11,7 +11,7 @@ Get more of an overview [here](/about.html)
 ## Getting Started
 Prerequisites:
 you will need Docker and Docker Compose
-get them here https://www.docker.com/get-started
+get them here [https://www.docker.com/get-started](https://www.docker.com/get-started)
 
 ## Installation:
 ``` bash
