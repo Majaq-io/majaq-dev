@@ -1,0 +1,13 @@
+{
+  "name": "majaq-dev-tools-docs",
+  "version": "1.0.0",
+  "description": "Tools to create a streamlined development workflow that bridges the gap between backend and front-end developers.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vuepress dev",
+    "build": "vuepress build",
+    "deploy": "vuepress build && cp .vuepress/dist ../../../docs"
+  },
+  "author": "jasenmichael",
+  "license": "MIT"
+}
