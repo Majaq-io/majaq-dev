@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vuepress dev",
     "build": "vuepress build",
-    "deploy": "echo building && ./build.sh"
+    "deploy": "./build.sh"
   },
   "author": "jasenmichael",
   "license": "MIT"
