@@ -14,9 +14,8 @@ services:
       - ./backend:/var/www/html # Full wordpress project
       - ./config/wp-content:/var/www/html/wp-content
       - ./config/.htaccess:/var/www/html/.htaccess
-      - ../docs:/var/www/html/docs
-      # - ./lib/src/docs/.vuepress/dist:/var/www/html/docs
-      # - ./lib/src/sites/.vuepress/dist:/var/www/html/sites
+      - ./src/docs/.vuepress/dist:/var/www/html/docs
+      # - ./src/sites/.vuepress/dist:/var/www/html/sites
       #- ./plugin-name/trunk/:/var/www/html/wp-content/plugins/plugin-name # Plugin development
       #- ./theme-name/trunk/:/var/www/html/wp-content/themes/theme-name # Theme development
     environment:
