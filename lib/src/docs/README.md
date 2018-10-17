@@ -21,7 +21,6 @@ git clone git@github.com:Majaq-io/majaq-dev.git
 or use https
 ``` bash
 git clone https://github.com/Majaq-io/majaq-dev.git
-
 ```
 
 then...
