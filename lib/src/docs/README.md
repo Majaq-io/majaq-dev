@@ -71,3 +71,4 @@ galleries:\
 coming soon......
 
 check out the list of [commands](/commands.html)
+
