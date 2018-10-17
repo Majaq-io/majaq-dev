@@ -14,8 +14,18 @@ you will need Docker and Docker Compose, get them here\
 [https://www.docker.com/get-started](https://www.docker.com/get-started)
 
 ## Installation:
+if you have ssh keys setup run:
 ``` bash
 git clone git@github.com:Majaq-io/majaq-dev.git
+```
+or use https
+``` bash
+git clone https://github.com/Majaq-io/majaq-dev.git
+
+```
+
+then...
+``` bash
 cd majaq-dev
 ./majaq.sh
 ```
