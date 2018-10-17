@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vuepress dev",
     "build": "vuepress build",
-    "deploy": "./build.sh"
+    "deploy": "./deploy-to-ghp.sh"
   },
   "author": "jasenmichael",
   "license": "MIT"
