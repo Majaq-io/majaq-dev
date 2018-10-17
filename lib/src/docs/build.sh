@@ -13,6 +13,7 @@ sed -i -e 's/docs/majaq-dev/g' .vuepress/config.js
 vuepress build
 
 # put the dev config back
+rm .vuepress/config.js
 cp .vuepress/dev-config.js .vuepress/config.js
 rm .vuepress/dev-config.js
 
