@@ -84,6 +84,7 @@ if [ -z $1 ] || [ "$1" = "start" ] ;then
     else
         checkForUpdate
         $_container up -d
+        docker cp $_pwd/lib/config/wp-config.php $_appName"_wp_1":/var/www/html/wp-config.php
         echo "Majaq Dev v$version is now runnning at"
         echo "http://localhost:8080"
         exit
@@ -107,6 +108,7 @@ elif [ "$1" = "restart" ] ;then
     else
         $_container stop
         $_container start
+        docker cp $_pwd/lib/config/dev-wp-config.php $_appName"_wp_1":/var/www/html/wp-config.php
         exit
     fi
 
@@ -149,6 +151,12 @@ elif [ "$1" = "--dump" ] ;then
     else
         sed -i 1,1d $_file # Removes the password warning from the file
     fi
+
+# test copy file
+elif [ "$1" = "cp-test" ] ;then
+    # echo "copying $2"
+    docker cp $_pwd/lib/config/dev-wp-config.php $_appName"_wp_1":/var/www/html/wp-config.php
+    exit
 
 # if an invalid parameter was passed
 else

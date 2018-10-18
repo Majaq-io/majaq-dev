@@ -15,7 +15,6 @@ services:
       - ./config/wp-content:/var/www/html/wp-content
       - ./config/.htaccess:/var/www/html/.htaccess
       - ./src/docs/.vuepress/dist:/var/www/html/docs
-      # - ./src/sites/.vuepress/dist:/var/www/html/sites
       #- ./plugin-name/trunk/:/var/www/html/wp-content/plugins/plugin-name # Plugin development
       #- ./theme-name/trunk/:/var/www/html/wp-content/themes/theme-name # Theme development
     environment:
@@ -64,15 +63,19 @@ services:
 
   wpbackup:
     image: aveltens/wordpress-backup
-    links:
-      - db
+    restart: always
     volumes:
       - "./backups:/backups"
-      - wp
+      - ./backend:/var/www/html
+    links:
+      - db:mysql
+    depends_on:
+      - db
     environment:
-      MYSQL_ENV_MYSQL_USER: wordpress
+      MYSQL_ENV_MYSQL_USER: root
       MYSQL_ENV_MYSQL_DATABASE: wordpress
-      MYSQL_ENV_MYSQL_PASSWORD: wordpress
+      MYSQL_ENV_MYSQL_PASSWORD: password
+      # MYSQL_PORT_3306_TCP_PORT: 3306
       CLEANUP_OLDER_THAN: 3 # number of days to keep backups
       # BACKUP_TIME: "0 3 * * *" # cron expression (default: 3AM)
   
