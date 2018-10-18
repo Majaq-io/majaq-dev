@@ -94,5 +94,15 @@ services:
     volumes:
       - ./backend:/var/www/wp_html
 
+  mailcatcher:
+    build:
+      context: ./config
+      dockerfile: mailcatcher
+    ports:
+      - "1025:1025"
+      - "1080:1080"
+    environment:
+      MAILCATCHER_PORT: 1025
+
 volumes:
   db_data:
